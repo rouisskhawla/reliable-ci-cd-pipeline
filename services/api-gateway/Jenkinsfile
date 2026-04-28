@@ -1,5 +1,6 @@
-@Library('jenkins-shared-library@v1.0.6') _
+@Library('jenkins-shared-library@v1.0.7') _
 buildPipeline(
     serviceDir: 'services/api-gateway',
+    serviceName : 'api-gateway',
     imageName: 'khawlarouiss/ci-cd-gateway'
 )
