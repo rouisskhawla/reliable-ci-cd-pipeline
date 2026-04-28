@@ -1,4 +1,4 @@
-@Library('jenkins-shared-library@v1.0.8') _
+@Library('jenkins-shared-library@v1.0.9') _
 buildPipeline(
     serviceDir: 'services/api-gateway',
     serviceName : 'api-gateway',
