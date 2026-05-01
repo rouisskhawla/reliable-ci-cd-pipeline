@@ -1,0 +1,7 @@
+@Library('jenkins-shared-library@v1.0.13') _
+buildPipeline(
+    type: 'frontend',
+    serviceDir: 'services/bookstore-frontend',
+    serviceName : 'bookstore-frontend',
+    imageName: 'khawlarouiss/ci-cd-bookstore-frontend'
+)
