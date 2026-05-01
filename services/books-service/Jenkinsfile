@@ -1,0 +1,6 @@
+@Library('jenkins-shared-library@v1.0.12') _
+buildPipeline(
+    serviceDir: 'services/books-service',
+    serviceName : 'books-service',
+    imageName: 'khawlarouiss/ci-cd-books'
+)
