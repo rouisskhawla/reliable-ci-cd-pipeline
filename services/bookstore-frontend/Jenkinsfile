@@ -1,4 +1,4 @@
-@Library('jenkins-shared-library@v1.0.15') _
+@Library('jenkins-shared-library@v1.0.16') _
 buildPipeline(
     type: 'frontend',
     serviceDir: 'services/bookstore-frontend',
