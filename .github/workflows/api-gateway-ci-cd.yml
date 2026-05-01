@@ -11,7 +11,7 @@ jobs:
     uses: rouisskhawla/github-shared-workflow/.github/workflows/ci-cd-pipeline.yml@main
     with:
       service-name: api-gateway
-      image-name: khawlarouiss/ci-cd-gateway
+      docker-image: khawlarouiss/ci-cd-gateway
       service-dir: services/api-gateway
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
