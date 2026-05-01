@@ -1,0 +1,17 @@
+name: CI CD Pipeline Api Gateway
+
+on:
+  push:
+    branches: [main]
+  push:
+    tags: ['v*']
+
+jobs:
+  pipeline:
+    uses: rouisskhawla/github-shared-workflow/.github/workflows/ci-cd-pipeline.yml@main
+    with:
+      service-name: api-gateway
+      docker-image: ci-cd-gateway
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
