@@ -1,4 +1,4 @@
-@Library('jenkins-shared-library@v1.0.11') _
+@Library('jenkins-shared-library@v1.0.12') _
 buildPipeline(
     serviceDir: 'services/authors-service',
     serviceName : 'authors-service',
