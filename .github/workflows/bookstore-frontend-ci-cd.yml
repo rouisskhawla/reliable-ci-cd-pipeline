@@ -1,0 +1,18 @@
+name: CI CD Pipeline Bookstore Frontend
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'services/bookstore-frontend/**'
+
+jobs:
+  pipeline:
+    uses: rouisskhawla/github-shared-workflow/.github/workflows/ci-cd-pipeline.yml@main
+    with:
+      service-name: bookstore-frontend
+      docker-image: khawlarouiss/ci-cd-booksstore-frontend
+      service-dir: services/bookstore-frontend
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
