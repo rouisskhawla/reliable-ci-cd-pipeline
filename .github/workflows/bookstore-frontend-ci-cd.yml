@@ -13,6 +13,10 @@ jobs:
       service-name: bookstore-frontend
       docker-image: khawlarouiss/ci-cd-booksstore-frontend
       service-dir: services/bookstore-frontend
+      service-type: frontend
+
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      KUBECONFIG_DEV:  ${{ secrets.KUBECONFIG_DEV }}
+      KUBECONFIG_PROD: ${{ secrets.KUBECONFIG_PROD }}
