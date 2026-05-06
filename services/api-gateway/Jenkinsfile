@@ -3,5 +3,5 @@ buildPipeline(
     serviceDir: 'services/api-gateway',
     serviceName : 'api-gateway',
     imageName: 'khawlarouiss/ci-cd-gateway'
-    
+
 )
