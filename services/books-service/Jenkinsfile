@@ -3,5 +3,4 @@ buildPipeline(
     serviceDir: 'services/books-service',
     serviceName : 'books-service',
     imageName: 'khawlarouiss/ci-cd-books'
-    
 )
