@@ -10,7 +10,7 @@ jobs:
   pipeline:
     uses: rouisskhawla/github-shared-workflow/.github/workflows/ci-cd-pipeline.yml@main
     with:
-      service-name: books
+      service-name: books-service
       docker-image: khawlarouiss/ci-cd-books
       service-dir: services/books-service
     secrets:
