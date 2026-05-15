@@ -2,6 +2,5 @@
 buildPipeline(
     serviceDir: 'services/authors-service',
     serviceName : 'authors-service',
-    imageName: 'khawlarouiss/ci-cd-authors'
-    
+    imageName: 'khawlarouiss/ci-cd-authors'   
 )
