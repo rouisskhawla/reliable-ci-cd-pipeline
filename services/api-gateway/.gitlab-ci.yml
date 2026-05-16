@@ -1,0 +1,25 @@
+include:
+  - project: 'rouisskhawla/gitlab-shared-template'
+    ref: main
+    file: '/pipeline.yml'
+
+variables:
+  SERVICE_NAME: api-gateway
+
+stages:
+  - build
+  - docker
+  - deploy-staging
+  - deploy-production
+
+build:
+  extends: .build-template
+
+docker:
+  extends: .docker-template
+
+deploy-staging:
+  extends: .deploy-staging-template
+
+deploy-production:
+  extends: .deploy-production-template
