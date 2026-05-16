@@ -3,3 +3,4 @@ include:
   # - local: '/services/authors-service/.gitlab-ci.yml'
   # - local: '/services/books-service/.gitlab-ci.yml'
   # - local: '/services/bookstore-frontend/.gitlab-ci.yml'
+  
