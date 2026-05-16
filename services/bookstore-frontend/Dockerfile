@@ -11,7 +11,6 @@ COPY angular.json ./
 COPY tsconfig*.json ./
 COPY src ./src
 COPY public ./public
-COPY .npmrc* ./
 
 RUN npx ng build --configuration=${BUILD_CONFIG}
 
