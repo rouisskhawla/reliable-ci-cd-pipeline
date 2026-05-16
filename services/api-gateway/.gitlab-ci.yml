@@ -1,5 +1,5 @@
 include:
-  - project: 'rouisskhawla/gitlab-shared-template'
+  - project: 'rouis.khawla09/gitlab-shared-template'
     ref: main
     file: '/pipeline.yml'
 
