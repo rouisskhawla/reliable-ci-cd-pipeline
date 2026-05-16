@@ -1,5 +1,5 @@
 include:
   - local: '/services/api-gateway/.gitlab-ci.yml'
-  - local: '/services/authors-service/.gitlab-ci.yml'
-  - local: '/services/books-service/.gitlab-ci.yml'
-  - local: '/services/bookstore-frontend/.gitlab-ci.yml'
+  # - local: '/services/authors-service/.gitlab-ci.yml'
+  # - local: '/services/books-service/.gitlab-ci.yml'
+  # - local: '/services/bookstore-frontend/.gitlab-ci.yml'
