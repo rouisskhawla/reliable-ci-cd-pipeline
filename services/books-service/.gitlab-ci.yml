@@ -4,10 +4,7 @@ include:
     file: '/pipeline.yml'
 
 variables:
-  SERVICE_NAME: books-service
-  SERVICE_DIR: services/books-service
   SERVICE_TYPE: backend
-  DOCKER_IMAGE: khawlarouiss/ci-cd-books
 
 stages:
   - build
@@ -16,21 +13,30 @@ stages:
   - deploy-production
 
 build-books-service:
+  variables:
+    SERVICE_DIR: services/books-service
   extends: .build-backend-template
 
 docker-books-service:
+  variables:
+    SERVICE_DIR: services/books-service
+    DOCKER_IMAGE: khawlarouiss/ci-cd-books
   extends: .docker-template
   needs:
     - job: build-books-service
       artifacts: true
 
 deploy-staging-books-service:
+  variables:
+    SERVICE_NAME: books-service
   extends: .deploy-staging-template
   needs:
     - job: docker-books-service
       artifacts: true
 
 deploy-production-books-service:
+  variables:
+    SERVICE_NAME: books-service
   extends: .deploy-production-template
   needs:
     - job: docker-books-service

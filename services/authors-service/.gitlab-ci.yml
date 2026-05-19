@@ -4,10 +4,7 @@ include:
     file: '/pipeline.yml'
 
 variables:
-  SERVICE_NAME: authors-service
-  SERVICE_DIR: services/authors-service
   SERVICE_TYPE: backend
-  DOCKER_IMAGE: khawlarouiss/ci-cd-authors
 
 stages:
   - build
@@ -16,21 +13,30 @@ stages:
   - deploy-production
 
 build-authors-service:
+  variables:
+    SERVICE_DIR: services/authors-service
   extends: .build-backend-template
 
 docker-authors-service:
+  variables:
+    SERVICE_DIR: services/authors-service
+    DOCKER_IMAGE: khawlarouiss/ci-cd-authors
   extends: .docker-template
   needs:
     - job: build-authors-service
       artifacts: true
 
 deploy-staging-authors-service:
+  variables:
+    SERVICE_NAME: authors-service
   extends: .deploy-staging-template
   needs:
     - job: docker-authors-service
       artifacts: true
 
 deploy-production-authors-service:
+  variables:
+    SERVICE_NAME: authors-service
   extends: .deploy-production-template
   needs:
     - job: docker-authors-service

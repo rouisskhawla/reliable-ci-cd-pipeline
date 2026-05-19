@@ -4,10 +4,7 @@ include:
     file: '/pipeline.yml'
 
 variables:
-  SERVICE_NAME: bookstore-frontend
-  SERVICE_DIR: services/bookstore-frontend
   SERVICE_TYPE: frontend
-  DOCKER_IMAGE: khawlarouiss/ci-cd-bookstore-frontend
 
 stages:
   - build
@@ -16,21 +13,30 @@ stages:
   - deploy-production
 
 build-bookstore-frontend:
+  variables:
+    SERVICE_DIR: services/bookstore-frontend
   extends: .build-frontend-template
 
 docker-bookstore-frontend:
+  variables:
+    SERVICE_DIR: services/bookstore-frontend
+    DOCKER_IMAGE: khawlarouiss/ci-cd-bookstore-frontend
   extends: .docker-template
   needs:
     - job: build-bookstore-frontend
       artifacts: true
 
 deploy-staging-bookstore-frontend:
+  variables:
+    SERVICE_NAME: bookstore-frontend
   extends: .deploy-staging-template
   needs:
     - job: docker-bookstore-frontend
       artifacts: true
 
 deploy-production-bookstore-frontend:
+  variables:
+    SERVICE_NAME: bookstore-frontend
   extends: .deploy-production-template
   needs:
     - job: docker-bookstore-frontend

@@ -4,10 +4,7 @@ include:
     file: '/pipeline.yml'
 
 variables:
-  SERVICE_NAME: api-gateway
-  SERVICE_DIR: services/api-gateway
   SERVICE_TYPE: backend
-  DOCKER_IMAGE: khawlarouiss/ci-cd-gateway
 
 stages:
   - build
@@ -16,21 +13,30 @@ stages:
   - deploy-production
 
 build-api-gateway:
+  variables:
+    SERVICE_DIR: services/api-gateway
   extends: .build-backend-template
 
 docker-api-gateway:
+  variables:
+    SERVICE_DIR: services/api-gateway
+    DOCKER_IMAGE: khawlarouiss/ci-cd-gateway
   extends: .docker-template
   needs:
     - job: build-api-gateway
       artifacts: true
 
 deploy-staging-api-gateway:
+  variables:
+    SERVICE_NAME: api-gateway
   extends: .deploy-staging-template
   needs:
     - job: docker-api-gateway
       artifacts: true
 
 deploy-production-api-gateway:
+  variables:
+    SERVICE_NAME: api-gateway
   extends: .deploy-production-template
   needs:
     - job: docker-api-gateway
