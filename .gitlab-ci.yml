@@ -1,6 +1,8 @@
 include:
   - local: '/services/api-gateway/.gitlab-ci.yml'
+    rules:
+      - changes:
+          - services/api-gateway/**/*
   # - local: '/services/authors-service/.gitlab-ci.yml'
   # - local: '/services/books-service/.gitlab-ci.yml'
   # - local: '/services/bookstore-frontend/.gitlab-ci.yml'
-  

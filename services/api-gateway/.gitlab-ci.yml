@@ -26,3 +26,4 @@ deploy-staging:
 
 deploy-production:
   extends: .deploy-production-template
+  
