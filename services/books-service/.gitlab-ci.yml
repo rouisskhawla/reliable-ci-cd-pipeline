@@ -1,0 +1,29 @@
+include:
+  - project: 'rouis.khawla09/gitlab-shared-template'
+    ref: main
+    file: '/pipeline.yml'
+
+variables:
+  SERVICE_NAME: books-service
+  SERVICE_DIR: services/books-service
+  SERVICE_TYPE: backend
+  DOCKER_IMAGE: khawlarouiss/ci-cd-books
+
+stages:
+  - build
+  - docker
+  - deploy-staging
+  - deploy-production
+
+build:
+  extends: .build-backend-template
+
+docker:
+  extends: .docker-template
+
+deploy-staging:
+  extends: .deploy-staging-template
+
+deploy-production:
+  extends: .deploy-production-template
+  

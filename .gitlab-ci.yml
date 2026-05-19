@@ -3,6 +3,15 @@ include:
     rules:
       - changes:
           - services/api-gateway/**/*
-  # - local: '/services/authors-service/.gitlab-ci.yml'
-  # - local: '/services/books-service/.gitlab-ci.yml'
-  # - local: '/services/bookstore-frontend/.gitlab-ci.yml'
+  - local: '/services/authors-service/.gitlab-ci.yml'
+    rules:
+      - changes:
+          - services/authors-service/**/*
+  - local: '/services/books-service/.gitlab-ci.yml'
+    rules:
+      - changes:
+          - services/books-service/**/*
+  - local: '/services/bookstore-frontend/.gitlab-ci.yml'
+    rules:
+      - changes:
+          - services/bookstore-frontend/**/*

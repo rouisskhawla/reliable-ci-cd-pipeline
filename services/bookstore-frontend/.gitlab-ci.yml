@@ -1,0 +1,29 @@
+include:
+  - project: 'rouis.khawla09/gitlab-shared-template'
+    ref: main
+    file: '/pipeline.yml'
+
+variables:
+  SERVICE_NAME: bookstore-frontend
+  SERVICE_DIR: services/bookstore-frontend
+  SERVICE_TYPE: frontend
+  DOCKER_IMAGE: khawlarouiss/ci-cd-bookstore-frontend
+
+stages:
+  - build
+  - docker
+  - deploy-staging
+  - deploy-production
+
+build:
+  extends: .build-frontend-template
+
+docker:
+  extends: .docker-template
+
+deploy-staging:
+  extends: .deploy-staging-template
+
+deploy-production:
+  extends: .deploy-production-template
+  
