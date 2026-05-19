@@ -16,7 +16,7 @@ stages:
   - deploy-production
 
 build:
-  extends: .build-template
+  extends: .build-backend-template
 
 docker:
   extends: .docker-template
