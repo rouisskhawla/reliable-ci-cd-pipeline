@@ -15,15 +15,23 @@ stages:
   - deploy-staging
   - deploy-production
 
-build:
+build-authors-service:
   extends: .build-backend-template
 
-docker:
+docker-authors-service:
   extends: .docker-template
+  needs:
+    - job: build-authors-service
+      artifacts: true
 
-deploy-staging:
+deploy-staging-authors-service:
   extends: .deploy-staging-template
+  needs:
+    - job: docker-authors-service
+      artifacts: true
 
-deploy-production:
+deploy-production-authors-service:
   extends: .deploy-production-template
-  
+  needs:
+    - job: docker-authors-service
+      artifacts: true

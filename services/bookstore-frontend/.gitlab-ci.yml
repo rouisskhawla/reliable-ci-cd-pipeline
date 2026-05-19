@@ -15,15 +15,23 @@ stages:
   - deploy-staging
   - deploy-production
 
-build:
+build-bookstore-frontend:
   extends: .build-frontend-template
 
-docker:
+docker-bookstore-frontend:
   extends: .docker-template
+  needs:
+    - job: build-bookstore-frontend
+      artifacts: true
 
-deploy-staging:
+deploy-staging-bookstore-frontend:
   extends: .deploy-staging-template
+  needs:
+    - job: docker-bookstore-frontend
+      artifacts: true
 
-deploy-production:
+deploy-production-bookstore-frontend:
   extends: .deploy-production-template
-  
+  needs:
+    - job: docker-bookstore-frontend
+      artifacts: true

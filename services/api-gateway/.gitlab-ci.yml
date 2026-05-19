@@ -15,15 +15,23 @@ stages:
   - deploy-staging
   - deploy-production
 
-build:
+build-api-gateway:
   extends: .build-backend-template
 
-docker:
+docker-api-gateway:
   extends: .docker-template
+  needs:
+    - job: build-api-gateway
+      artifacts: true
 
-deploy-staging:
+deploy-staging-api-gateway:
   extends: .deploy-staging-template
+  needs:
+    - job: docker-api-gateway
+      artifacts: true
 
-deploy-production:
+deploy-production-api-gateway:
   extends: .deploy-production-template
-  
+  needs:
+    - job: docker-api-gateway
+      artifacts: true

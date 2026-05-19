@@ -15,15 +15,23 @@ stages:
   - deploy-staging
   - deploy-production
 
-build:
+build-books-service:
   extends: .build-backend-template
 
-docker:
+docker-books-service:
   extends: .docker-template
+  needs:
+    - job: build-books-service
+      artifacts: true
 
-deploy-staging:
+deploy-staging-books-service:
   extends: .deploy-staging-template
+  needs:
+    - job: docker-books-service
+      artifacts: true
 
-deploy-production:
+deploy-production-books-service:
   extends: .deploy-production-template
-  
+  needs:
+    - job: docker-books-service
+      artifacts: true
