@@ -20,3 +20,5 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       KUBECONFIG_DEV:  ${{ secrets.KUBECONFIG_DEV }}
       KUBECONFIG_PROD: ${{ secrets.KUBECONFIG_PROD }}
+      SLACK_BOT_TOKEN:   ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID:  ${{ secrets.SLACK_CHANNEL_ID }}
