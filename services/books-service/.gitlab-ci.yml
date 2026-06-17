@@ -7,15 +7,23 @@ variables:
   SERVICE_TYPE: backend
 
 stages:
+  - test
   - build
   - docker
   - deploy-staging
   - deploy-production
 
+test-books-service:
+  variables:
+    SERVICE_DIR: services/books-service
+  extends: .test-backend-template
+
 build-books-service:
   variables:
     SERVICE_DIR: services/books-service
   extends: .build-backend-template
+  needs:
+    - job: test-books-service
 
 docker-books-service:
   variables:

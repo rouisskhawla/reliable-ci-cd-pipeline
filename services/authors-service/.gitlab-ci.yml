@@ -7,15 +7,23 @@ variables:
   SERVICE_TYPE: backend
 
 stages:
+  - test
   - build
   - docker
   - deploy-staging
   - deploy-production
 
+test-authors-service:
+  variables:
+    SERVICE_DIR: services/authors-service
+  extends: .test-backend-template
+
 build-authors-service:
   variables:
     SERVICE_DIR: services/authors-service
   extends: .build-backend-template
+  needs:
+    - job: test-authors-service
 
 docker-authors-service:
   variables:

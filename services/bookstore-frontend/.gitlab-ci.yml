@@ -7,15 +7,23 @@ variables:
   SERVICE_TYPE: frontend
 
 stages:
+  - test
   - build
   - docker
   - deploy-staging
   - deploy-production
 
+test-bookstore-frontend:
+  variables:
+    SERVICE_DIR: services/bookstore-frontend
+  extends: .test-frontend-template
+
 build-bookstore-frontend:
   variables:
     SERVICE_DIR: services/bookstore-frontend
   extends: .build-frontend-template
+  needs:
+    - job: test-bookstore-frontend
 
 docker-bookstore-frontend:
   variables:
