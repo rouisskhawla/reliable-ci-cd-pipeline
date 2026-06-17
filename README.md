@@ -1,27 +1,33 @@
 # reliable-ci-cd-pipeline
 
-A cross-platform CI/CD monorepo demonstrating reusable pipeline patterns across **Jenkins**, **GitHub Actions**, and **GitLab CI**  with Docker image builds, Helm chart deployments, and Kubernetes rollouts.
+![CI CD Pipeline Api Gateway](https://github.com/rouisskhawla/reliable-ci-cd-pipeline/actions/workflows/api-gateway-ci-cd.yml/badge.svg)
+![CI CD Pipeline Authors](https://github.com/rouisskhawla/reliable-ci-cd-pipeline/actions/workflows/authors-ci-cd.yml/badge.svg)
+![CI CD Pipeline Books](https://github.com/rouisskhawla/reliable-ci-cd-pipeline/actions/workflows/books-ci-cd.yml/badge.svg)
+![CI CD Pipeline Bookstore Frontend](https://github.com/rouisskhawla/reliable-ci-cd-pipeline/actions/workflows/bookstore-frontend-ci-cd.yml/badge.svg)
 
-This repository is the application side of the pattern. The pipeline logic is in separate shared repositories. Each service here only declares what it is and passes parameters to the shared definition.
+A cross-platform CI/CD monorepo demonstrating reusable pipeline patterns across **Jenkins**, **GitHub Actions**, and **GitLab CI**, with Docker image builds, Helm chart deployments, Kubernetes rollouts, automated testing, and Slack notifications.
+
+This repository is the application side of the pattern. The pipeline logic is defined in separate shared repositories. Each service only declares what it is and passes parameters to the shared definition.
 
 ---
 
 ## Repository Structure
 
 ```
+
 reliable-ci-cd-pipeline/
 ├── services/
 │   ├── api-gateway/
 │       ├── src/
 │       ├── pom.xml
 │       ├── Dockerfile
-│       ├── .gitlab-ci.yml        # GitLab CI service pipeline
-│       ├── Jenkinsfile           # Jenkins service pipeline
+│       ├── .gitlab-ci.yml
+│       ├── Jenkinsfile
 │   ├── authors-service/
 │   ├── books-service/
 │   └── bookstore-frontend/
 ├── charts/
-│   └── microservice/             # Single shared Helm chart for all services
+│   └── microservice/
 │       ├── Chart.yaml
 │       ├── values.yaml
 │       └── templates/
@@ -33,11 +39,12 @@ reliable-ci-cd-pipeline/
 │   ├── books-service/
 │   └── bookstore-frontend/
 ├── .github/
-│   └── workflows/                # GitHub Actions caller workflows (one per service)
-└── .gitlab-ci.yml                # GitLab CI root pipeline
-```
+│   └── workflows/
+└── .gitlab-ci.yml
 
-Each service directory contains its own `Jenkinsfile` (for Jenkins) and `.gitlab-ci.yml` (for GitLab CI). GitHub Actions workflow files live at the root under `.github/workflows/` due to a platform constraint.
+````
+
+Each service directory contains its own `Jenkinsfile` and `.gitlab-ci.yml`. GitHub Actions workflows live under `.github/workflows/`.
 
 ---
 
@@ -54,15 +61,38 @@ Each service directory contains its own `Jenkinsfile` (for Jenkins) and `.gitlab
 
 ## Pipeline Stages
 
-All three CI/CD platforms execute the same logical stages:
+All CI/CD platforms execute the same logical stages:
 
-1. **Compute Version** : generates a unique image tag encoding branch, build number, and short commit SHA
-2. **Build** : Maven (`mvn clean package`) for backend services, `npm ci && npm run build` for frontend
-3. **Docker Build & Push** : builds and pushes the image to Docker Hub, tags `latest` on `main`
-4. **Deploy** : Helm upgrade/install into the target Kubernetes namespace, `dev` branch → `dev` namespace, `main` branch → `prod` namespace
-5. **Manual Approval Gate** : production deployments require explicit human approval before Helm runs
+1. **Compute Version**
+   - Generates a unique image tag using branch, build number, and commit SHA
 
-### Version Format
+2. **Build**
+   - Backend: `mvn clean package`
+   - Frontend: `npm ci && npm run build`
+
+3. **Test (NEW)**
+   - Backend: `mvn test`
+   - Frontend: `npm ci && npm run test`
+
+4. **Docker Build & Push**
+   - Builds Docker image
+   - Pushes to Docker Hub
+   - Tags `latest` on `main`
+
+5. **Deploy (Helm)**
+   - `dev` branch → `dev` namespace
+   - `main` branch → `prod` namespace
+
+6. **Manual Approval Gate**
+   - Required for production deployments
+
+7. **Slack Notification **
+   - Sends pipeline result to Slack channel
+   - Runs on success or failure
+
+---
+
+## Version Format
 
 | Branch | Example Tag |
 |---|---|
@@ -74,19 +104,19 @@ All three CI/CD platforms execute the same logical stages:
 
 ## Shared Pipeline Repositories
 
-This monorepo consumes pipeline logic from three separate repositories:
+Pipeline logic is centralized in shared repositories:
 
 | Platform | Shared Repo |
 |---|---|
-| Jenkins | [jenkins-shared-library](https://github.com/rouisskhawla/jenkins-shared-library) |
-| GitHub Actions | [github-shared-workflow](https://github.com/rouisskhawla/github-shared-workflow) |
-| GitLab CI | [gitlab-shared-template](https://github.com/rouisskhawla/gitlab-shared-template) |
+| Jenkins | https://github.com/rouisskhawla/jenkins-shared-library |
+| GitHub Actions | https://github.com/rouisskhawla/github-shared-workflow |
+| GitLab CI | https://github.com/rouisskhawla/gitlab-shared-template |
 
 ---
 
 ## Jenkins Setup
 
-Each service's `Jenkinsfile` pins to a versioned release of the shared library:
+Each service uses a shared Jenkins library:
 
 ```groovy
 @Library('jenkins-shared-library@v1.0.16') _
@@ -98,13 +128,14 @@ buildPipeline(
 )
 ```
 
-The library is registred in Jenkins under **Manage Jenkins → System → Global Pipeline Libraries** pointing to the `jenkins-shared-library` repository.
+The library is registered under:
+**Manage Jenkins → System → Global Pipeline Libraries**
 
 ---
 
 ## GitHub Actions Setup
 
-Each service has a caller workflow under `.github/workflows/`. A `paths:` filter ensures only the relevant service pipeline triggers on each push:
+Each service uses a reusable workflow:
 
 ```yaml
 on:
@@ -125,6 +156,8 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       KUBECONFIG_DEV:  ${{ secrets.KUBECONFIG_DEV }}
       KUBECONFIG_PROD: ${{ secrets.KUBECONFIG_PROD }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
 ```
 
 The self-hosted runner and all secrets are configured in this repository.
@@ -133,10 +166,9 @@ The self-hosted runner and all secrets are configured in this repository.
 
 ## GitLab CI Setup
 
-The root `.gitlab-ci.yml` includes each service's pipeline file with a `rules: changes:` filter. Service pipelines include the shared template and extend its job definitions:
+Root pipeline includes service pipelines:
 
 ```yaml
-# Root pipeline
 include:
   - local: '/services/api-gateway/.gitlab-ci.yml'
     rules:
@@ -144,38 +176,88 @@ include:
           - services/api-gateway/**/*
 ```
 
+Each service pipeline extends shared templates.
+
 ---
 
 ## Required Secrets / CI Variables
 
-These secrets are configured in each CI/CD platform (GitHub repository secrets, Jenkins credentials or GitLab CI/CD variables):
+All CI/CD platforms require:
 
-| Variable | Description |
-|---|---|
-| `DOCKER_USERNAME` | Docker Hub username |
-| `DOCKER_PASSWORD` | Docker Hub password or access token |
-| `KUBECONFIG_DEV` | kubeconfig file content for the dev cluster |
-| `KUBECONFIG_PROD` | kubeconfig file content for the prod cluster |
+| Variable           | Description                  |
+| ------------------ | ---------------------------- |
+| `DOCKER_USERNAME`  | Docker Hub username          |
+| `DOCKER_PASSWORD`  | Docker Hub password or token |
+| `KUBECONFIG_DEV`   | kubeconfig for dev cluster   |
+| `KUBECONFIG_PROD`  | kubeconfig for prod cluster  |
+| `SLACK_BOT_TOKEN`  | Slack bot token              |
+| `SLACK_CHANNEL_ID` | Slack channel ID             |
+
+---
+
+## Slack Notifications
+
+Slack notifications are sent after pipeline execution.
+
+### Behavior
+
+* Runs after all stages complete
+* Triggered on success or failure
+* Includes service, branch, status, env and version
+
+* Uses Slack Web API (`chat.postMessage`)
 
 ---
 
 ## Helm Chart
 
-All four services share the single chart at `charts/microservice/`. Each service provides its own values files under `helm-values/<service-name>/`. The chart is a templateand the values files are the per-service configuration.
+All services share a single Helm chart:
+
+```
+charts/microservice/
+```
+
+Each service provides its own values:
+
+```
+helm-values/<service-name>/values-dev.yaml
+helm-values/<service-name>/values-prod.yaml
+```
+
+Example deployment:
 
 ```bash
-# Example: deploy api-gateway to dev
 helm upgrade --install api-gateway charts/microservice \
-    -f helm-values/api-gateway/values-dev.yaml \
-    --set global.imageTag=1.0.47-dev-a3f9c12 \
-    --namespace dev \
-    --create-namespace
+  -f helm-values/api-gateway/values-dev.yaml \
+  --set global.imageTag=1.0.47-dev-a3f9c12 \
+  --namespace dev \
+  --create-namespace
+```
+
+---
+
+## Pipeline Flow
+
+```
+Compute Version
+      ↓
+Build
+      ↓
+Test
+      ↓
+Docker Build & Push
+      ↓
+Deploy (Helm)
+      ↓
+Manual Approval (prod)
+      ↓
+Slack Notification
 ```
 
 ---
 
 ## Related Repositories
 
-- [jenkins-shared-library](https://github.com/rouisskhawla/jenkins-shared-library) — Groovy shared library for Jenkins
-- [github-shared-workflow](https://github.com/rouisskhawla/github-shared-workflow) — reusable workflow for GitHub Actions
-- [gitlab-shared-template](https://github.com/rouisskhawla/gitlab-shared-template) — job templates for GitLab CI
+* [https://github.com/rouisskhawla/jenkins-shared-library](https://github.com/rouisskhawla/jenkins-shared-library)
+* [https://github.com/rouisskhawla/github-shared-workflow](https://github.com/rouisskhawla/github-shared-workflow)
+* [https://github.com/rouisskhawla/gitlab-shared-template](https://github.com/rouisskhawla/gitlab-shared-template)
