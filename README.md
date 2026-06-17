@@ -70,7 +70,7 @@ All CI/CD platforms execute the same logical stages:
    - Backend: `mvn clean package`
    - Frontend: `npm ci && npm run build`
 
-3. **Test (NEW)**
+3. **Test**
    - Backend: `mvn test`
    - Frontend: `npm ci && npm run test`
 
@@ -86,7 +86,7 @@ All CI/CD platforms execute the same logical stages:
 6. **Manual Approval Gate**
    - Required for production deployments
 
-7. **Slack Notification **
+7. **Slack Notification**
    - Sends pipeline result to Slack channel
    - Runs on success or failure
 
