@@ -5,16 +5,13 @@
 ![CI CD Pipeline Books](https://github.com/rouisskhawla/reliable-ci-cd-pipeline/actions/workflows/books-ci-cd.yml/badge.svg)
 ![CI CD Pipeline Bookstore Frontend](https://github.com/rouisskhawla/reliable-ci-cd-pipeline/actions/workflows/bookstore-frontend-ci-cd.yml/badge.svg)
 
-A cross-platform CI/CD monorepo demonstrating reusable pipeline patterns across **Jenkins**, **GitHub Actions**, and **GitLab CI**, with Docker image builds, Helm chart deployments, Kubernetes rollouts, automated testing, and Slack notifications.
-
-This repository is the application side of the pattern. The pipeline logic is defined in separate shared repositories. Each service only declares what it is and passes parameters to the shared definition.
+A Kubernetes-based monorepo containing four microservices with a fully automated CI/CD pipeline powered by GitHub Actions, Docker, and Helm. Infrastructure is provisioned and managed separately via Terraform. This repository contains only application code and pipeline configuration.
 
 ---
 
 ## Repository Structure
 
 ```
-
 reliable-ci-cd-pipeline/
 ├── services/
 │   ├── api-gateway/
@@ -41,7 +38,6 @@ reliable-ci-cd-pipeline/
 ├── .github/
 │   └── workflows/
 └── .gitlab-ci.yml
-
 ````
 
 Each service directory contains its own `Jenkinsfile` and `.gitlab-ci.yml`. GitHub Actions workflows live under `.github/workflows/`.
@@ -52,10 +48,10 @@ Each service directory contains its own `Jenkinsfile` and `.gitlab-ci.yml`. GitH
 
 | Service | Type | Build Tool |
 |---|---|---|
-| `api-gateway` | backend | Maven / JDK 17 |
-| `authors-service` | backend | Maven / JDK 17 |
-| `books-service` | backend | Maven / JDK 17 |
-| `bookstore-frontend` | frontend | Node.js 24 / npm |
+| `api-gateway` | Backend | Maven / JDK 17 |
+| `authors-service` | Backend | Maven / JDK 17 |
+| `books-service` | Backend | Maven / JDK 17 |
+| `bookstore-frontend` | Frontend | Node.js 24 / npm |
 
 ---
 
@@ -114,30 +110,12 @@ Pipeline logic is centralized in shared repositories:
 
 ---
 
-## Jenkins Setup
-
-Each service uses a shared Jenkins library:
-
-```groovy
-@Library('jenkins-shared-library@v1.0.16') _
-
-buildPipeline(
-    serviceDir:  'services/api-gateway',
-    serviceName: 'api-gateway',
-    imageName:   'username/ci-cd-gateway'
-)
-```
-
-The library is registered under:
-**Manage Jenkins → System → Global Pipeline Libraries**
-
----
-
 ## GitHub Actions Setup
 
 Each service uses a reusable workflow:
 
 ```yaml
+# .github/workflows/api-gateway-ci-cd.yml
 on:
   push:
     branches: [main, dev]
@@ -162,69 +140,43 @@ jobs:
 
 The self-hosted runner and all secrets are configured in this repository.
 
----
+A push that only touches `services/books-service/` will not trigger any other service's pipeline.
 
-## GitLab CI Setup
+### Pipeline Stages
 
-Root pipeline includes service pipelines:
-
-```yaml
-include:
-  - local: '/services/api-gateway/.gitlab-ci.yml'
-    rules:
-      - changes:
-          - services/api-gateway/**/*
+```
+Build & Test
+     ↓
+Docker Build & Push
+     ↓
+Deploy via Helm
+     ↓
+Manual Approval (prod only)
+     ↓
+Slack Notification
 ```
 
-Each service pipeline extends shared templates.
+### Branch Environment Mapping
 
----
+| Branch | Namespace | Approval required |
+|---|---|---|
+| `dev` | `dev` | No |
+| `main` | `prod` | Yes — GitHub Environment gate |
 
-## Required Secrets / CI Variables
+### Image Version Format
 
-All CI/CD platforms require:
-
-| Variable           | Description                  |
-| ------------------ | ---------------------------- |
-| `DOCKER_USERNAME`  | Docker Hub username          |
-| `DOCKER_PASSWORD`  | Docker Hub password or token |
-| `KUBECONFIG_DEV`   | kubeconfig for dev cluster   |
-| `KUBECONFIG_PROD`  | kubeconfig for prod cluster  |
-| `SLACK_BOT_TOKEN`  | Slack bot token              |
-| `SLACK_CHANNEL_ID` | Slack channel ID             |
-
----
-
-## Slack Notifications
-
-Slack notifications are sent after pipeline execution.
-
-### Behavior
-
-* Runs after all stages complete
-* Triggered on success or failure
-* Includes service, branch, status, env and version
-
-* Uses Slack Web API (`chat.postMessage`)
+| Branch | Example tag |
+|---|---|
+| `dev` | `1.0.47-dev-a3f9c12` |
+| `main` | `1.0.47-a3f9c12` |
 
 ---
 
 ## Helm Chart
 
-All services share a single Helm chart:
+All services share one chart located at `charts/microservice/`. Each service provides its own values per environment under `helm-values/<service-name>/`.
 
-```
-charts/microservice/
-```
-
-Each service provides its own values:
-
-```
-helm-values/<service-name>/values-dev.yaml
-helm-values/<service-name>/values-prod.yaml
-```
-
-Example deployment:
+Example deploy command (run by the shared workflow):
 
 ```bash
 helm upgrade --install api-gateway charts/microservice \
@@ -236,28 +188,43 @@ helm upgrade --install api-gateway charts/microservice \
 
 ---
 
-## Pipeline Flow
+## Infrastructure
 
-```
-Compute Version
-      ↓
-Build
-      ↓
-Test
-      ↓
-Docker Build & Push
-      ↓
-Deploy (Helm)
-      ↓
-Manual Approval (prod)
-      ↓
-Slack Notification
-```
+Cluster infrastructure: namespaces, RBAC, NGINX Ingress Controller, TLS certificates, and the GitHub Actions service account is managed by Terraform in a separate repository:
+
+**[devops-infrastructure-terraform](https://github.com/rouisskhawla/devops-infrastructure-terraform)**
+
+Terraform provisions:
+- The `dev` and `prod` namespaces on the Kubernetes clusters
+- A scoped `github-actions` ServiceAccount with the minimum permissions needed for Helm deploys
+- NGINX Ingress Controller (via Helm) with hostNetwork binding on each cluster node
+- Self-signed TLS certificates for `*.bookstore.com` domains, stored as Kubernetes TLS secrets
+- `KUBECONFIG_DEV` and `KUBECONFIG_PROD` secrets in this repository: pushed automatically after each Terraform apply, no manual copy-paste
+
+The `KUBECONFIG_DEV` and `KUBECONFIG_PROD` secrets used by this pipeline are generated and rotated by Terraform. They contain a scoped kubeconfig for the `github-actions` ServiceAccount, not admin credentials.
+
+---
+
+## Required Secrets
+
+These must exist as repository secrets in this repo. `KUBECONFIG_DEV` and `KUBECONFIG_PROD` are managed automatically by Terraform, the rest are set manually once:
+
+| Secret | Description | Managed by |
+|---|---|---|
+| `DOCKER_USERNAME` | Docker Hub username | Manual |
+| `DOCKER_PASSWORD` | Docker Hub token | Manual |
+| `KUBECONFIG_DEV` | Scoped kubeconfig for dev cluster | Terraform (automatic) |
+| `KUBECONFIG_PROD` | Scoped kubeconfig for prod cluster | Terraform (automatic) |
+| `SLACK_BOT_TOKEN` | Slack bot token | Manual |
+| `SLACK_CHANNEL_ID` | Slack channel ID | Manual |
 
 ---
 
 ## Related Repositories
 
-* [https://github.com/rouisskhawla/jenkins-shared-library](https://github.com/rouisskhawla/jenkins-shared-library)
-* [https://github.com/rouisskhawla/github-shared-workflow](https://github.com/rouisskhawla/github-shared-workflow)
-* [https://github.com/rouisskhawla/gitlab-shared-template](https://github.com/rouisskhawla/gitlab-shared-template)
+| Repository | Purpose |
+|---|---|
+| [github-shared-workflow](https://github.com/rouisskhawla/github-shared-workflow) | Reusable GitHub Actions pipeline called by all services |
+| [devops-infrastructure-terraform](https://github.com/rouisskhawla/devops-infrastructure-terraform) | Terraform infrastructure for dev and prod clusters |
+| [jenkins-shared-library](https://github.com/rouisskhawla/jenkins-shared-library) | Equivalent shared pipeline for Jenkins |
+| [gitlab-shared-template](https://github.com/rouisskhawla/gitlab-shared-template) | Equivalent shared pipeline for GitLab CI |
