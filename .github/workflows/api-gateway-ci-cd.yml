@@ -13,6 +13,7 @@ jobs:
       service-name: api-gateway
       docker-image: khawlarouiss/ci-cd-gateway
       service-dir: services/api-gateway
+      service-key: api_gateway
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

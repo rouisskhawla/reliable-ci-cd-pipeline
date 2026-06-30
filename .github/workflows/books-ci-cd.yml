@@ -13,6 +13,7 @@ jobs:
       service-name: books-service
       docker-image: khawlarouiss/ci-cd-books
       service-dir: services/books-service
+      service-key: books_service
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

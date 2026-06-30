@@ -13,6 +13,8 @@ jobs:
       service-name: authors-service
       docker-image: khawlarouiss/ci-cd-authors
       service-dir: services/authors-service
+      service-key: authors_service
+
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

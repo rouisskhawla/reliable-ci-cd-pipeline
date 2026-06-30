@@ -14,6 +14,7 @@ jobs:
       docker-image: khawlarouiss/ci-cd-booksstore-frontend
       service-dir: services/bookstore-frontend
       service-type: frontend
+      service-key: bookstore_frontend
 
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
