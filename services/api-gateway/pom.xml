@@ -87,6 +87,7 @@
 				<version>12.2.2</version>
 				<configuration>
 					<nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+					<skip>${dependency-check.skip}</skip>
 				</configuration>
 				<executions>
 					<execution>
