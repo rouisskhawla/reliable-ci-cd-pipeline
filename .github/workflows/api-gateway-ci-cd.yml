@@ -23,3 +23,4 @@ jobs:
       SLACK_CHANNEL_ID:  ${{ secrets.SLACK_CHANNEL_ID }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
