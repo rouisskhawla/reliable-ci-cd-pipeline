@@ -87,6 +87,9 @@
 				<version>12.2.2</version>
 				<configuration>
 					<nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+					<nvdApiDelay>6000</nvdApiDelay>
+					<connectionTimeout>60</connectionTimeout>
+					<readTimeout>120</readTimeout>
 					<skip>${dependency-check.skip}</skip>
 				</configuration>
 				<executions>
