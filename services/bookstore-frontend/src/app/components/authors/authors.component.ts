@@ -1,5 +1,5 @@
 import { Author } from '../../models/author.model';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthorsService } from '../../services/author.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-authors',
   templateUrl: './authors.component.html',
   standalone:true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports:[FormsModule, CommonModule]
 })
 export class AuthorsComponent implements OnInit {

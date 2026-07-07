@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BooksService } from '../../services/book.service';
 import { Book } from '../../models/book.model';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-books',
   templateUrl: './books.component.html',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, CommonModule]
 })
 export class BooksComponent implements OnInit {
