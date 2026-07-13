@@ -15,3 +15,10 @@ ingress:
   enabled: true
   host: dev.bookstore.com
   tlsSecret: bookstore-dev-tls
+
+probes:
+  readiness:
+    path: /health
+
+  liveness:
+    path: /health

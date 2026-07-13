@@ -1,0 +1,19 @@
+name: bookstore-frontend
+namespace: local
+
+replicaCount: 1
+
+image:
+  repository: khawlarouiss/ci-cd-bookstore-frontend
+  tag: ""  
+  
+service:
+  port: 80
+  targetPort: 80
+  
+probes:
+  readiness:
+    path: /health
+
+  liveness:
+    path: /health
