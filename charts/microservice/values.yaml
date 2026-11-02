@@ -22,17 +22,43 @@ ingress:
   host: ""
   tlsSecret: ""
 
+global:
+  imageTag: "latest"
+
+deployment:
+  strategy: rolling
+
 probes:
   readiness:
     path: /actuator/health/readiness
-    initialDelaySeconds: 10
+    initialDelaySeconds: 15
     periodSeconds: 10
-    timeoutSeconds: 2
+    timeoutSeconds: 5
     failureThreshold: 3
 
   liveness:
     path: /actuator/health/liveness
     initialDelaySeconds: 30
-    periodSeconds: 20
-    timeoutSeconds: 2
+    periodSeconds: 10
+    timeoutSeconds: 5
     failureThreshold: 3
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+metrics:
+  path: /actuator/prometheus
+
+canary:
+  stepWeight: 10
+  stepInterval: 1m
+  maxWeight: 50
+  failureThreshold: 5
+  thresholds:
+    successRate: 99
+    latency: 500

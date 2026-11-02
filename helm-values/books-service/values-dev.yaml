@@ -16,3 +16,34 @@ config:
 
 ingress:
   enabled: false
+  refKind: Ingress
+  refApiVersion: networking.k8s.io/v1
+  name: {{ .Values.name }}
+
+deployment:
+  strategy: rolling
+
+probes:
+  readiness:
+    path: /actuator/health/readiness
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  liveness:
+    path: /actuator/health/liveness
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+metrics:
+  path: /actuator/prometheus

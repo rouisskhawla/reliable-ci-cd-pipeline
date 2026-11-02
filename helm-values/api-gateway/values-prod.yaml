@@ -21,3 +21,15 @@ ingress:
   enabled: true
   host: api-prod.bookstore.com
   tlsSecret: bookstore-prod-tls
+
+deployment:
+  strategy: canary
+
+canary:
+  stepWeight: 10
+  stepInterval: 2m
+  maxWeight: 50
+  failureThreshold: 3
+  thresholds:
+    successRate: 99.5
+    latency: 300

@@ -12,6 +12,11 @@ spec:
     metadata:
       labels:
         app: {{ .Values.name }}
+        version: {{ .Values.global.imageTag | default "latest" }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.targetPort }}"
+        prometheus.io/path: {{ .Values.metrics.path }}
     spec:
       containers:
         - name: {{ .Values.name }}
@@ -19,7 +24,17 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.targetPort }}
-          
+
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.name }}-config
+
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+
           readinessProbe:
             httpGet:
               path: {{ .Values.probes.readiness.path }}
@@ -37,12 +52,11 @@ spec:
             periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
             failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
-
-          envFrom:
-            - configMapRef:
-                name: {{ .Values.name }}-config
-          env:
-          {{- range $key, $value := .Values.env }}
-            - name: {{ $key }}
-              value: "{{ $value }}"
-          {{- end }}
+          
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
