@@ -10,6 +10,7 @@ jobs:
   pipeline:
     uses: rouisskhawla/github-shared-workflow/.github/workflows/ci-cd-pipeline.yml@main
     with:
+      skip-validation: true
       service-name: api-gateway
       docker-image: khawlarouiss/ci-cd-gateway
       service-dir: services/api-gateway

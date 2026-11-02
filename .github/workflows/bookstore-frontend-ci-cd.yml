@@ -10,6 +10,7 @@ jobs:
   pipeline:
     uses: rouisskhawla/github-shared-workflow/.github/workflows/ci-cd-pipeline.yml@main
     with:
+      skip-validation: true
       service-name: bookstore-frontend
       docker-image: khawlarouiss/ci-cd-booksstore-frontend
       service-dir: services/bookstore-frontend

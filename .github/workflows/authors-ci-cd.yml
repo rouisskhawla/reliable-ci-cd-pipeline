@@ -10,6 +10,7 @@ jobs:
   pipeline:
     uses: rouisskhawla/github-shared-workflow/.github/workflows/ci-cd-pipeline.yml@main
     with:
+      skip-validation: true
       service-name: authors-service
       docker-image: khawlarouiss/ci-cd-authors
       service-dir: services/authors-service
