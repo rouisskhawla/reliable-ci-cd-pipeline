@@ -20,7 +20,7 @@ config:
 ingress:
   refKind: Ingress
   refApiVersion: networking.k8s.io/v1
-  name: {{ .Values.name }}
+  name: api-gateway
   enabled: true
   host: api-dev.bookstore.com
   tlsSecret: bookstore-dev-tls
