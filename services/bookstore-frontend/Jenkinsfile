@@ -3,6 +3,5 @@ buildPipeline(
     type: 'frontend',
     serviceDir: 'services/bookstore-frontend',
     serviceName : 'bookstore-frontend',
-    imageName: 'khawlarouiss/ci-cd-bookstore-frontend'
-    
+    imageName: 'khawlarouiss/ci-cd-bookstore-frontend'  
 )

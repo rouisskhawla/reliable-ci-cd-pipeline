@@ -12,7 +12,7 @@ jobs:
     with:
       skip-validation: true
       service-name: bookstore-frontend
-      docker-image: khawlarouiss/ci-cd-booksstore-frontend
+      docker-image: khawlarouiss/ci-cd-bookstore-frontend
       service-dir: services/bookstore-frontend
       service-type: frontend
       service-key: bookstore_frontend
