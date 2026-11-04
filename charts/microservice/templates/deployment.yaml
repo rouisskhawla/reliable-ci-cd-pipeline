@@ -14,9 +14,11 @@ spec:
         app: {{ .Values.name }}
         version: {{ .Values.global.imageTag | default "latest" }}
       annotations:
+        {{- if ne (toString .Values.metrics.enabled) "false" }}
         prometheus.io/scrape: "true"
         prometheus.io/port: "{{ .Values.service.targetPort }}"
         prometheus.io/path: {{ .Values.metrics.path }}
+        {{- end }}
     spec:
       containers:
         - name: {{ .Values.name }}
