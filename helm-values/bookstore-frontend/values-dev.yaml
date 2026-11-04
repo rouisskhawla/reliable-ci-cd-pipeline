@@ -25,13 +25,13 @@ deployment:
 probes:
   readiness:
     path: /
-    initialDelaySeconds: 30
+    initialDelaySeconds: 60
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
   liveness:
     path: /
-    initialDelaySeconds: 30
+    initialDelaySeconds: 120
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
