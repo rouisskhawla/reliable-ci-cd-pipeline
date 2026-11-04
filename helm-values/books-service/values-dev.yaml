@@ -21,7 +21,7 @@ ingress:
   name: books-service
 
 deployment:
-  strategy: canary
+  strategy: rolling
 
 probes:
   readiness:
