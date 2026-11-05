@@ -5,6 +5,7 @@ metadata:
   name: {{ .Values.name }}
   namespace: {{ .Values.namespace }}
 spec:
+  provider: nginx
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
