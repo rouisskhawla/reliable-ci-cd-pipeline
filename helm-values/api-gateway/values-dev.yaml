@@ -22,6 +22,7 @@ ingress:
   refApiVersion: networking.k8s.io/v1
   name: api-gateway
   enabled: true
+  className: nginx
   host: api-dev.bookstore.com
   tlsSecret: bookstore-dev-tls
   
